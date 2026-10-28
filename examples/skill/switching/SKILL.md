@@ -111,6 +111,9 @@ is no dry-run. Treat it like a destructive op:
   the error returned.
 
 ## Reference files (load on demand)
+- [example-prompts](./references/example-prompts.md) — copy-paste prompts grouped by
+  capability, each annotated with the tool(s) it exercises and the expected result. Read
+  when the user asks "what can I ask?" or wants ready-made prompts for a capability.
 - [playbook](./references/playbook.md) — setup (Docker/native), client configs (VS Code/
   Claude/Cursor/Codex), and 10 use cases as prompt→tools. Read when setting up the server
   or wiring a client, or for worked use-case prompts.
