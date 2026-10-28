@@ -15,6 +15,7 @@ catalyst-center-switching/
 ├── SKILL.md                         # The skill (loaded on demand)
 ├── README.md                        # This file
 └── references/
+    ├── example-prompts.md           # Grouped, annotated prompts per capability
     ├── playbook.md                  # Prompts → tools, client configs, gotchas
     ├── capability-matrix.md         # Validated CAN/CANNOT + PM enhancement asks
     └── get-tools-evidence.md        # Live input/output examples (sanitized)
