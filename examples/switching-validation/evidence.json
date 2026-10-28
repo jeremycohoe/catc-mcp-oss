@@ -1,0 +1,238 @@
+{
+  "inventory_total": 36,
+  "switch_count": 18,
+  "switch": {
+    "hostname": "JCOHOE-C9300-TOR1.cisco.com",
+    "managementIpAddress": "10.85.134.65",
+    "platformId": "C9300-24UX",
+    "softwareType": "IOS-XE",
+    "softwareVersion": "26.01.1",
+    "series": "Cisco Catalyst 9300 Series Switches",
+    "role": "ACCESS",
+    "upTime": "89 days, 19:43:27.24",
+    "reachabilityStatus": "Reachable",
+    "serialNumber": "FCW2134L0VB"
+  },
+  "interface_count": 52,
+  "vlan_sample": [
+    {
+      "vlanType": "",
+      "vlanNumber": 301,
+      "numberOfIPs": 64,
+      "ipAddress": "10.85.134.193",
+      "prefix": "26",
+      "interfaceName": "Vlan301",
+      "networkAddress": "10.85.134.192"
+    },
+    {
+      "vlanType": "",
+      "vlanNumber": 10,
+      "interfaceName": "Vlan10"
+    },
+    {
+      "vlanType": "",
+      "vlanNumber": 311,
+      "numberOfIPs": 64,
+      "ipAddress": "10.85.134.65",
+      "prefix": "26",
+      "interfaceName": "Vlan311",
+      "networkAddress": "10.85.134.64"
+    },
+    {
+      "vlanType": "",
+      "vlanNumber": 302,
+      "numberOfIPs": 64,
+      "ipAddress": "10.85.134.129",
+      "prefix": "26",
+      "interfaceName": "Vlan302",
+      "networkAddress": "10.85.134.128"
+    },
+    {
+      "vlanType": "",
+      "vlanNumber": 696,
+      "numberOfIPs": 256,
+      "ipAddress": "192.168.199.2",
+      "prefix": "24",
+      "interfaceName": "Vlan696",
+      "networkAddress": "192.168.199.0"
+    },
+    {
+      "vlanType": "",
+      "vlanNumber": 1,
+      "interfaceName": "Vlan1"
+    }
+  ],
+  "interface_sample": [
+    {
+      "portName": "AppGigabitEthernet1/0/1",
+      "status": "up",
+      "vlanId": "1",
+      "portMode": "trunk",
+      "speed": "1000000",
+      "duplex": "AutoNegotiate",
+      "adminStatus": "UP"
+    },
+    {
+      "portName": "FortyGigabitEthernet1/1/1",
+      "status": "down",
+      "vlanId": "1",
+      "portMode": "dynamic_auto",
+      "speed": "40000000",
+      "duplex": "AutoNegotiate",
+      "adminStatus": "UP"
+    },
+    {
+      "portName": "FortyGigabitEthernet1/1/2",
+      "status": "down",
+      "vlanId": "1",
+      "portMode": "dynamic_auto",
+      "speed": "40000000",
+      "duplex": "AutoNegotiate",
+      "adminStatus": "UP"
+    }
+  ],
+  "running_config_chars": 59338,
+  "running_config_head": "\nBuilding configuration...\n\nCurrent configuration : 75852 bytes\n!\n! Last configuration change at 19:22:47 PDST Wed Oct 14 2026 by admin\n! NVRAM config last updated at 19:22:47 PDST Wed Oct 14 2026 by admin\n!\nversion 26.1\nsystem mode insecure\nno upgrade fpd auto\nservice timestamps debug datetime msec\nservice timestamps log datetime msec\nservice password-encryption\nservice internal\nservice call-home",
+  "stack": {
+    "deviceId": "258a262b-6315-4442-9810-31652f7c0403",
+    "stackSwitchInfo": [
+      {
+        "hwPriority": 0,
+        "macAddress": "70:1f:53:9b:0f:80",
+        "numNextReload": 1,
+        "role": "ACTIVE",
+        "softwareImage": "26.01.01",
+        "stackMemberNumber": 1,
+        "state": "READY",
+        "switchPriority": 1,
+        "entPhysicalIndex": "1000",
+        "serialNumber": "FCW2134L0VB",
+        "platformId": "C9300-24UX"
+      }
+    ],
+    "stackPortInfo": [
+      {
+        "isSynchOk": "No",
+        "name": "StackSub-St1-1",
+        "switchPort": "1/1",
+        "neighborPort": "NONE/NONE",
+        "nrLinkOkChanges": 0,
+        "stackCableLengthInfo": "NO_CABLE",
+        "stackPortOperStatusInfo": "DOWN",
+        "linkActive": false,
+        "linkOk": false
+      },
+      {
+        "isSynchOk": "No",
+        "name": "StackSub-St1-2",
+        "switchPort": "1/2",
+        "neighborPort": "NONE/NONE",
+        "nrLinkOkChanges": 0,
+        "stackCableLengthInfo": "NO_CABLE",
+        "stackPortOperStatusInfo": "DOWN",
+        "linkActive": false,
+        "linkOk": false
+      }
+    ],
+    "svlSwitchInfo": null
+  },
+  "switch_compliance": {
+    "deviceUuid": "258a262b-6315-4442-9810-31652f7c0403",
+    "complianceStatus": "NON_COMPLIANT",
+    "lastUpdateTime": 1793197722481,
+    "scheduleTime": 1793219232482
+  },
+  "command_runner_legit_reads_count": 28,
+  "command_runner_legit_reads_sample": [
+    "call-home",
+    "cd",
+    "cping",
+    "crypto",
+    "dir",
+    "eping",
+    "grep",
+    "help",
+    "mediatrace",
+    "monitor",
+    "more",
+    "mping",
+    "mstat",
+    "ping",
+    "pwd"
+  ],
+  "sda_provisioned_count": 4,
+  "switch_compliance_posture": [
+    {
+      "host": "autoinstall_config.vnc2.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "cwBorder2.sda.lab",
+      "status": "COMPLIANT"
+    },
+    {
+      "host": "CW_Core_MGMT.lab.sda",
+      "status": "COMPLIANT"
+    },
+    {
+      "host": "CW_SDA_9300.vnc2.cisco.com",
+      "status": "COMPLIANT"
+    },
+    {
+      "host": "CW_SDA_C9300_2.vnc2.cisco.com",
+      "status": "COMPLIANT"
+    },
+    {
+      "host": "JCOHOE-C9200.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "JCOHOE-C9300-TOR1.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "JCOHOE-C9500.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "JCOHOE-C9600",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "jcohoe-c9kv-vnc2",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "newhostname2.amazon.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-BORDER1.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-BORDER2.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-LEAF1.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-LEAF2.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-LEAF3.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-LEAF4.cisco.com",
+      "status": "NON_COMPLIANT"
+    },
+    {
+      "host": "VNC2-SPINE1.cisco.com",
+      "status": "COMPLIANT"
+    }
+  ]
+}
