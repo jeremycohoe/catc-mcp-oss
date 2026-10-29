@@ -69,7 +69,7 @@ def footer(s, n=None):
     if n is None:
         n = len(prs.slides._sldIdLst)
     txt(s, Inches(0.5), Inches(7.05), Inches(9), Inches(0.35),
-        [("Catalyst Center MCP — Switching Management  |  Technical Marketing  |  Validated on CatC 2.3.7.11", 9, GREY, False)])
+        [("Catalyst Center MCP — Switching Management  |  Technical Marketing  |  Lab evidence: CatC 2.3.7.11", 9, GREY, False)])
     txt(s, Inches(12.3), Inches(7.05), Inches(0.8), Inches(0.35),
         [(str(n), 9, GREY, False)], align=PP_ALIGN.RIGHT)
 
@@ -106,7 +106,7 @@ card(s, Inches(0.5), Inches(1.5), Inches(6.1), Inches(4.9), "Context & capabilit
       "Tool catalog by switching category"], CISCO_CYAN)
 card(s, Inches(6.8), Inches(1.5), Inches(6.0), Inches(4.9), "Proof, deployment & next steps",
      ["Live evidence from a real switch",
-      "The one write path, end-to-end",
+      "Write submission and observed no-op outcome",
       "Architecture, deployment & security",
       "Demo playbook of switching use cases",
       "Enhancement asks for Product Management"], CISCO_BLUE)
@@ -221,11 +221,11 @@ card(s, Inches(6.8), Inches(4.7), Inches(6.0), Inches(1.9), "Fleet compliance (r
 footer(s)
 
 # ---------- Slide: Full GET harvest ----------
-s = slide(); header(s, "EVIDENCE AT SCALE", "Every GET Tool Exercised Live (514)")
-stats2 = [("229", "returned real data", GREEN),
-          ("48", "valid but empty", CISCO_CYAN),
-          ("160", "API error*", AMBER),
-          ("77", "needs manual ID**", GREY)]
+s = slide(); header(s, "EVIDENCE AT SCALE", "514 GET Definitions: 437 Invoked, 77 Skipped")
+stats2 = [("229", "classifier: OK", GREEN),
+          ("48", "classifier: EMPTY", CISCO_CYAN),
+          ("160", "classifier: API_ERR", AMBER),
+          ("77", "SKIPPED", GREY)]
 x = Inches(0.5)
 for num, lab, col in stats2:
     rect(s, x, Inches(1.5), Inches(2.97), Inches(1.6), col)
@@ -233,11 +233,11 @@ for num, lab, col in stats2:
     txt(s, x, Inches(2.5), Inches(2.97), Inches(0.5), [(lab, 12.5, WHITE, True)], align=PP_ALIGN.CENTER)
     x += Inches(3.1)
 card(s, Inches(0.5), Inches(3.4), Inches(12.3), Inches(3.2), "What this gives you",
-     ["277 tools (OK + empty) produced a validated request/response contract — captured as real input/output examples",
+     ["277 calls labeled OK or EMPTY; these are harvest labels, not end-to-end acceptance results",
       "Examples span inventory, interfaces, VLANs, running-config, health, compliance, SWIM, SDA, PnP, advisories",
-      "* API errors are mostly the ambiguous {id} resolved to a device UUID where a different entity (image/site/report) was expected",
-      "** Skipped tools need IDs not present in the lab (template, report, execution, profile) — their required inputs are documented",
-      "Full appendix: get-tools-evidence.md (per-tool inputs + output samples)"], CISCO_BLUE)
+      "Generic argument resolution can choose the wrong entity type; failures require individual investigation",
+      "77 tools were not called because required inputs were unresolved; no success claim for those tools",
+      "Appendix samples may be truncated; use live schemas and dated acceptance evidence"], CISCO_BLUE)
 footer(s)
 
 # ---------- Slide 5: CANNOT do ----------
@@ -251,7 +251,7 @@ rows = [
     ("SWIM distribute / activate / golden image", "Not available — only image list/summary GETs"),
     ("PnP claim / onboard device", "Not available — PnP tools read-only"),
     ("Run show/CLI commands (command runner exec)", "Not available — only legit-reads catalog is bundled"),
-    ("api_sdaFabricSitesReadiness", "Bundled but returns HTTP 404 on 2.3.7.11"),
+    ("api_sdaFabricSitesReadiness", "HTTP 404 observed in this lab; cause not established"),
 ]
 y = Inches(1.45)
 rh = Inches(0.52)
@@ -264,7 +264,7 @@ for i, (cap, note) in enumerate(rows):
 footer(s)
 
 # ---------- Slide 6: The one write path (demo) ----------
-s = slide(); header(s, "DEMO — THE ONE WRITE PATH", "Compliance Remediation, End-to-End")
+s = slide(); header(s, "DEMO — THE ONE WRITE PATH", "Compliance Remediation: Submission and Observed No-Op")
 card(s, Inches(0.5), Inches(1.5), Inches(6.1), Inches(2.4), "Tool",
      ["api_complianceRemediation  (POST)",
       "Path: /compliance/networkDevices/{id}/issues/remediation/provision",
@@ -273,13 +273,13 @@ card(s, Inches(0.5), Inches(1.5), Inches(6.1), Inches(2.4), "Tool",
 card(s, Inches(6.8), Inches(1.5), Inches(6.0), Inches(2.4), "Validated result (VNC2-SPINE1)",
      ["Call returned an async taskId",
       "Task progress: SUCCESS, isError: false",
-      "'Nothing to be remediated' (device compliant → no flap)",
-      "Confirms the write path works safely end-to-end"], GREEN)
+      "'Nothing to be remediated' in this one test",
+      "Task outcome checked through direct REST, outside MCP"], GREEN)
 card(s, Inches(0.5), Inches(4.1), Inches(12.3), Inches(2.5), "Operational takeaways",
      ["This is the ONLY mutating action in the switching surface for 2.3.7.11",
       "No dry-run / change-preview exists — gate it behind change control & human approval",
-      "On a compliant device it is a safe no-op; on a non-compliant device it pushes config and may flap",
-      "Bind a read-only account to remove write capability entirely for pure visibility use cases"], CISCO_BLUE)
+      "No configuration-changing remediation was demonstrated; not every category is supported",
+      "No-op is not a safety guarantee; read-only RBAC denies writes, not tool discovery"], CISCO_BLUE)
 footer(s)
 
 # ---------- Slide 7: Architecture & deployment ----------
@@ -305,7 +305,7 @@ card(s, Inches(0.5), Inches(1.5), Inches(6.1), Inches(4.6), "Key facts",
       "Every tool runs with the configured account's RBAC permissions",
       "Treat any connected client as able to call any bundled op the account allows",
       "No multi-controller fan-out; one controller per server instance",
-      "Results are a JSON string nested under 'result' (double-parse)"], RED, title_color=RED)
+      "Inspect actual client result structure; decode nested JSON only when needed"], RED, title_color=RED)
 card(s, Inches(6.8), Inches(1.5), Inches(6.0), Inches(4.6), "Recommended controls",
      ["Bind a DEDICATED, LEAST-PRIVILEGE account (read-only for visibility)",
       "Keep the endpoint private; TLS at ingress; VERIFY_SSL=true",
@@ -338,11 +338,25 @@ asks = [
     "Command-runner EXECUTION (read-only show) — catalog is exposed but execution is not",
     "Server-side read-only mode / tool allow-list (safety independent of account RBAC)",
     "Dry-run / change-preview for mutating tools (esp. remediation flap)",
-    "Release coverage parity — remove tools that 404 on the target release (e.g. fabric readiness)",
-    "Typed/structured output contract (avoid JSON-string-in-'result' double-parsing)",
+    "Release compatibility checks — investigate lab 404s before declaring unsupported endpoints",
+    "Typed output and clear pagination/record-grain contracts; preserve errors and source times",
 ]
 card(s, Inches(0.5), Inches(1.5), Inches(12.3), Inches(5.1), "Prioritized for the official OSS server",
      asks, AMBER)
+footer(s)
+
+# ---------- Slide: Validation boundaries ----------
+s = slide(); header(s, "FOLLOW-UP VALIDATION", "Evidence Strength and Open Questions")
+card(s, Inches(0.5), Inches(1.5), Inches(6.1), Inches(4.9), "Reproduced GET response observations",
+     ["Health: 61 rows, 30 unique UUIDs, totalCount=30; repeated rows equal within UUID groups",
+      "Health ten-row requests overlap; preserve page boundaries rather than assuming coverage",
+      "Compliance: 26 category records for 17 devices; repeated device IDs are not necessarily duplicate findings",
+      "Six bounded GET probes saved with arguments, timestamps and structured payloads"], CISCO_BLUE)
+card(s, Inches(6.8), Inches(1.5), Inches(6.0), Inches(4.9), "Claims and next decisions",
+     ["The original 26 examples have narrative observations, not complete acceptance traces",
+      "Five handoff workflows passed: 46 GET calls, 18 switches, 52 interfaces, 14 site members; Python client only",
+      "No configuration-changing remediation demonstrated; current review stops before execution",
+      "Separate missing tools, lab endpoint failures, data-contract questions and agent usability"], AMBER)
 footer(s)
 
 # ---------- Slide 11: Summary / call to action ----------
