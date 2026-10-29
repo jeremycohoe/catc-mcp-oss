@@ -48,8 +48,10 @@ server is not running, see Setup in [playbook](./references/playbook.md).
 ## IDs are opaque — fetch them, never invent them
 Most per-device tools take a device **UUID** (`id`), not an IP or hostname. Get it from a
 listing tool and pass the exact value through; never retype or reconstruct an ID.
-- Device UUID: `api_retrieveNetworkDevices` (filter `family` contains "Switch") or
-  `api_getNetworkDeviceByIP` (arg `ipAddress`).
+- Device UUID: `api_retrieveNetworkDevices` (use the exact `family` value returned by
+  inventory; on the validated 2.3.7.11 controller switches use `Switches and Hubs`) or
+  `api_getNetworkDeviceByIP` (arg `ipAddress`). Do not guess a substring family filter:
+  `family="Switch"` returned no rows on the test controller.
 - Site UUID: `api_getSites`. Image/tag/interface IDs: their respective list tools.
 If a call 404s on an `{id}`, you likely passed the wrong **kind** of ID (e.g. a device
 UUID where a site/image ID was expected) — re-fetch from the correct listing tool.
@@ -68,7 +70,7 @@ UUID where a site/image ID was expected) — re-fetch from the correct listing t
 | Interfaces & VLANs | `api_getDeviceInterfaceCount`, `api_getDeviceInterfacesBySpecifiedRange`, `api_getDeviceInterfaceVLANs`, `api_getAllInterfaces` |
 | Running-config / archive | `api_getDeviceConfigById`, `api_getConfigurationArchiveDetails` |
 | Health & assurance | `api_devices` (device-health), `api_getSites` |
-| Compliance posture | `api_getComplianceStatus` (needs `complianceStatus` + `limit`), `api_deviceComplianceStatus`, `api_complianceDetailsOfDevice` |
+| Compliance posture | `api_getComplianceDetail` (device lists; needs `complianceStatus` + `limit`), `api_getComplianceStatus` (status records; needs `complianceStatus` + `limit`), `api_deviceComplianceStatus`, `api_complianceDetailsOfDevice` |
 | Advisories / notices / bugs | `api_getSecurityAdvisoriesAffectingTheNetworkDevice`, `api_getFieldNoticesAffectingTheNetworkDevice`, `api_getBugsAffectingTheNetworkDevice` |
 | SWIM images (read) | `api_returnsListOfSoftwareImages` (needs `limit`), `api_returnsTheImageSummaryForTheGivenSite` |
 | SDA fabric (read) | `api_getProvisionedDevices`, `api_getProvisionedDevicesCount` |
@@ -78,13 +80,18 @@ UUID where a site/image ID was expected) — re-fetch from the correct listing t
 
 ## Output contract (easy to get wrong)
 Tool results are returned as a **JSON string nested under `result`**. Parse twice:
-`json.loads(outer["result"])`, then read the `response` field. Lists may be empty when a
-feature simply isn't configured in that controller (a valid answer, not an error).
+`json.loads(outer["result"])`, then read the `response` field. An empty response means no
+records were returned for that query. It does not prove a feature is unconfigured or that
+there is no exposure. Distinguish a successful empty result from an error, unsupported
+endpoint, or incomplete/partial retrieval.
 
 ## Argument traps
 - Some GETs have **required** args even though they look optional:
-  `api_getComplianceStatus` needs **both** `complianceStatus` and `limit`;
-  `api_returnsListOfSoftwareImages` needs `limit`. On *"Missing required keyword only
+  `api_getComplianceDetail` and `api_getComplianceStatus` need `complianceStatus` and
+  `limit`; `api_returnsListOfSoftwareImages` needs `limit`;
+  `api_getSecurityAdvisoriesAffectingTheNetworkDevice` needs `networkDeviceId`, `limit`
+  (1-10), `sortBy`, and `order`. Use `sortBy="securityImpactRating"` and `order="desc"`
+  unless a different supported ordering is requested. On *"Missing required keyword only
   argument"*, add the named arg and retry.
 - **Header args are modeled as tool args** — the write tool requires `Content-Type`.
 - Newer vs legacy inventory tools differ: `api_retrieveNetworkDevices` returns
@@ -106,7 +113,8 @@ is no dry-run. Treat it like a destructive op:
 - *HTTP 404 on an `{id}`* → wrong ID kind (re-fetch from the right listing tool) **or** the
   tool is bundled but unsupported on this release (e.g. `api_sdaFabricSitesReadiness` 404s
   on 2.3.7.11) — report it as a release gap, don't retry blindly.
-- *Empty list* → feature not configured in this controller; report "none found", not an error.
+- *Empty list* → no records were returned for that query. Report the empty result as such;
+  do not infer that the feature is unconfigured or that the device is risk-free.
 - After two distinct failed attempts, stop and report: the tool, the exact args sent, and
   the error returned.
 
