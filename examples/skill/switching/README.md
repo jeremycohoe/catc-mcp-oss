@@ -31,6 +31,13 @@ catalyst-center-switching/
 3. An MCP client (VS Code, Claude Desktop, Cursor, Codex, or custom) with the
    endpoint registered.
 
+## Example prompts
+
+Start with the [switching prompt library](./references/example-prompts.md).
+It includes 26 copyable workflows across 15 capability groups, with tool sequences,
+required inputs, expected report formats, and limitations. The examples are
+schema-checked guidance, not a claim that every workflow was executed end-to-end.
+
 ## Install
 Copy this whole folder into one of your agent's skill locations:
 
@@ -53,9 +60,10 @@ It then appears as `/catalyst-center-switching` and auto-loads for switching tas
   `release/<M.N.P.Q>` matching your controller.
 - **Safety.** The one write action (`api_complianceRemediation`) can cause a network
   flap; gate it behind change control. Prefer a read-only account otherwise.
-- **Provenance.** The examples in `references/get-tools-evidence.md` were captured by
-  invoking all 514 GET tools live against a lab controller; credential/discovery
-  outputs are redacted.
+- **Provenance.** The [evidence appendix](./references/get-tools-evidence.md) accounts
+  for 514 GET definitions: 437 were invoked and 77 were skipped. Invocation does
+  not imply success; credential/discovery outputs are redacted. This harvest does
+  not validate every complete prompt workflow.
 
 ## License / attribution
 The MCP server referenced by this skill is Apache-2.0
