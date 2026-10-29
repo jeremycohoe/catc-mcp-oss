@@ -14,10 +14,12 @@ should obtain it. You do not need to look up UUIDs or parse JSON yourself.
    explicitly marked remediation workflow.
 
 **Evidence status:** tool names, required arguments, and the mappings below were
-checked against the local 2.3.7.11 bundle. All 26 workflows were exercised against a
-live 2.3.7.11 controller on 2026-10-29; results depend on the controller's data and
-feature availability. Expected results describe a report format, not a guarantee that
-every field exists.
+checked against the local 2.3.7.11 bundle. The
+[dated results report](./example-prompt-results.md) summarizes reported live-controller
+observations for all 26 examples on 2026-10-29. Exact-prompt transcripts and complete
+tool traces are not bundled, so this is not a claim that every prompt passed all
+output requirements end-to-end. Expected results describe a report format, not a
+guarantee that every field exists.
 
 ### Rules that apply to every example
 

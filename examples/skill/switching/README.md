@@ -15,8 +15,8 @@ catalyst-center-switching/
 ├── SKILL.md                         # The skill (loaded on demand)
 ├── README.md                        # This file
 └── references/
-    ├── example-prompts.md           # 26 copy-ready switching workflows, exercised live
-    ├── example-prompt-results.md    # Captured inputs and outputs for all 26 examples
+    ├── example-prompts.md           # 26 copy-ready switching workflows
+    ├── example-prompt-results.md    # Reported observations and acceptance limits
     ├── playbook.md                  # Prompts → tools, client configs, gotchas
     ├── capability-matrix.md         # Validated CAN/CANNOT + PM enhancement asks
     └── get-tools-evidence.md        # Live input/output examples (sanitized)
@@ -36,8 +36,9 @@ catalyst-center-switching/
 
 Start with the [switching prompt library](./references/example-prompts.md).
 It includes 26 copyable workflows across 15 capability groups, with tool sequences,
-required inputs, expected report formats, and limitations. All 26 prompts were exercised
-against a live 2.3.7.11 controller; captured results and coverage notes are in the
+required inputs, expected report formats, and limitations. A live-controller report
+contains observations for all 26 examples, but exact-prompt transcripts and full
+acceptance evidence are not bundled. Results and coverage notes are in the
 [example prompt results](./references/example-prompt-results.md).
 
 ## Install
@@ -57,7 +58,9 @@ It then appears as `/catalyst-center-switching` and auto-loads for switching tas
 ## Captured prompt runs
 
 The [example prompt results](./references/example-prompt-results.md) document the
-resolved inputs and captured outcomes for all 26 prompts. Hostnames are replaced
+reported inputs and outcomes for all 26 examples, with a run manifest and explicit
+acceptance limitations. It is not proof that every exact prompt passed end-to-end.
+Hostnames are replaced
 consistently with model-family aliases such as `switch-c9300-01`; the dated report
 notes which environment details remain in the capture.
 
@@ -72,7 +75,8 @@ notes which environment details remain in the capture.
 - **Provenance.** The [evidence appendix](./references/get-tools-evidence.md) accounts
   for 514 GET definitions: 437 were invoked and 77 were skipped. Invocation does
   not imply success; credential/discovery outputs are redacted. Separately, the dated
-  `references/example-prompt-results.md` records all 26 switching prompt runs; hostnames
+  [example results report](./references/example-prompt-results.md) summarizes observations
+  for all 26 examples, not independently reproducible execution traces; hostnames
   are replaced consistently, while IPs and opaque IDs remain from the test environment.
 
 ## License / attribution

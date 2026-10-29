@@ -79,8 +79,11 @@ UUID where a site/image ID was expected) — re-fetch from the correct listing t
 | **Compliance remediation (WRITE)** | `api_complianceRemediation` — see below |
 
 ## Output contract (easy to get wrong)
-Tool results are returned as a **JSON string nested under `result`**. Parse twice:
-`json.loads(outer["result"])`, then read the `response` field. An empty response means no
+Inspect the client's actual result structure before decoding. In the tested FastMCP
+client, structured content contained a JSON string under `result`; decode that string
+once, then inspect `response` when present. Other clients may already expose parsed
+objects or text content. Do not blindly double-decode or discard errors outside
+`response`. An empty response means no
 records were returned for that query. It does not prove a feature is unconfigured or that
 there is no exposure. Distinguish a successful empty result from an error, unsupported
 endpoint, or incomplete/partial retrieval.
@@ -102,17 +105,24 @@ endpoint, or incomplete/partial retrieval.
 is no dry-run. Treat it like a destructive op:
 1. Confirm the exact target device and that a flap is acceptable (lab vs production);
    get an explicit "yes" before calling. Never run it as implicit cleanup.
-2. Args: `id` (device UUID) + `Content-Type: application/json`. It returns a `taskId`;
-   poll the task for the outcome.
-3. On a **compliant** device it is a safe no-op ("Nothing to be remediated"); on a
-   NON_COMPLIANT device it changes config and may flap.
-4. Prefer a read-only account to remove this capability entirely for pure visibility work.
+2. Read the findings and remediation-support flags first. The API does not address
+   every category; see the exclusions in [example 8A](./references/example-prompts.md#8-remediation---write).
+3. After approval, submit once with `id` (device UUID) and
+   `Content-Type: application/json`. A returned `taskId` confirms submission, not
+   completion. Verify that discovered task tools support that ID before polling;
+   otherwise report the outcome as unverified. Never resubmit just because tracking fails.
+4. One earlier compliant-device test completed with "Nothing to be remediated."
+   That is an observation, not a safety guarantee. NON_COMPLIANT status alone does
+   not establish that the API can fix the finding or that configuration will change.
+5. Prefer a read-only account to deny write authorization for pure visibility work;
+   this does not remove the tool from discovery.
 
 ## Failure protocol
 - *Missing required keyword only argument* → add the named arg (see Argument traps), retry once.
-- *HTTP 404 on an `{id}`* → wrong ID kind (re-fetch from the right listing tool) **or** the
-  tool is bundled but unsupported on this release (e.g. `api_sdaFabricSitesReadiness` 404s
-  on 2.3.7.11) — report it as a release gap, don't retry blindly.
+- *HTTP 404 on an `{id}`* → verify the ID kind, entity existence, endpoint, and
+  controller compatibility. `api_sdaFabricSitesReadiness` returned 404 in the tested
+  lab; that alone does not establish a universal release gap. Report the observed
+  failure and unresolved cause rather than retrying blindly.
 - *Empty list* → no records were returned for that query. Report the empty result as such;
   do not infer that the feature is unconfigured or that the device is risk-free.
 - After two distinct failed attempts, stop and report: the tool, the exact args sent, and
@@ -122,12 +132,17 @@ is no dry-run. Treat it like a destructive op:
 - [example-prompts](./references/example-prompts.md) — copy-paste prompts grouped by
   capability, each annotated with the tool(s) it exercises and the expected result. Read
   when the user asks "what can I ask?" or wants ready-made prompts for a capability.
+- [example-prompt-results](./references/example-prompt-results.md) — dated, sanitized
+  observations for the 26 examples, with acceptance and provenance limitations.
+  Read for worked outputs or validation claims; do not treat summaries as execution logs.
 - [playbook](./references/playbook.md) — setup (Docker/native), client configs (VS Code/
   Claude/Cursor/Codex), and 10 use cases as prompt→tools. Read when setting up the server
   or wiring a client, or for worked use-case prompts.
 - [capability-matrix](./references/capability-matrix.md) — the validated CAN/CANNOT matrix
   and PM enhancement asks. Read when a user asks whether something is possible, or to scope
   what the bundle supports.
-- [get-tools-evidence](./references/get-tools-evidence.md) — live input/output examples from
-  all 514 GET tools (229 with real data; credentials redacted). Read when you need the exact
-  shape of a tool's response or a concrete example.
+- [get-tools-evidence](./references/get-tools-evidence.md) — harvest covering 514 GET
+  definitions: 437 invoked and 77 skipped. The classifier labeled 229 OK, 48 EMPTY,
+  and 160 API_ERR; these labels are not end-to-end acceptance results. Samples are
+  sanitized and may be truncated, so use the live schema for executable arguments
+  and complete response shapes.

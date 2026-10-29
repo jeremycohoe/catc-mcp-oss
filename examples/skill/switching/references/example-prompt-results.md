@@ -5,7 +5,40 @@ Share-ready example report captured 2026-10-29 18:07 UTC. This is the report-cap
 **Controller/tool set:** Catalyst Center 2.3.7.11; catc-mcp-oss 2.3.7.11.
 
 **Selected test values:** switch `switch-c9300-04` (`10.85.134.65`), site `Global/Vancouver Canada/VNC2`, tag `WAN`.
-**Test behavior:** 26 prompts exercised as read-only workflows, including the remediation approval checkpoint. Empty results and data-quality limits are reported without interpreting them as proof of absent risk or unconfigured features.
+**Reported test behavior:** read-only observations are recorded for 26 examples,
+including the remediation approval checkpoint. Exact-prompt transcripts and full
+tool traces are not bundled; this report does not establish end-to-end acceptance
+of every prompt or requested output format. Empty results and data-quality limits
+are reported without interpreting them as proof of absent risk or unconfigured features.
+
+## Run manifest and acceptance status
+
+| Item | Recorded value or limitation |
+|---|---|
+| Capture time | 2026-10-29 18:07 UTC; not a source timestamp |
+| Controller/tool release | 2.3.7.11, as reported by the original capture |
+| Server source commit | Not recorded in this report; the documentation commit is not a substitute |
+| Client, agent, and transport | Not recorded |
+| Exact prompt transcripts | Not bundled |
+| Tool calls and arguments | Summarized per example; complete call sequence and retry/page traces not bundled |
+| Sanitized structured responses | Not bundled with this report; the older GET harvest is separate evidence |
+| Saved pre-change snapshot | No separate snapshot path or artifact is recorded |
+| Write execution | Reported as not performed; example 8A covers review/approval only |
+
+**Acceptance:** all 26 examples have narrative observations, but exact-prompt and
+complete-output acceptance remains **unverified**. For example, 2A/2B summarize
+counts rather than showing the requested port-level tables, 6B summarizes site
+counts rather than listing matched switches, and 15A does not identify a persisted
+structured snapshot. A successful tool call, a correct aggregate, and a passed
+operator workflow are different claims.
+
+For a future acceptance run, record the exact prompt, client/agent and server
+commit, UTC start/end times, tool names and sanitized arguments, every page/retry,
+response status and source timestamps, and a relative path to sanitized structured
+evidence. Mark each example **PASS**, **PARTIAL**, **FAIL**, or **BLOCKED** against
+its requested output and safety conditions. Do not reconstruct missing logs or
+retroactively label the current summaries PASS. Review responses for secrets
+before saving them.
 
 ## 1A. Build a complete switch inventory
 
@@ -187,6 +220,13 @@ Share-ready example report captured 2026-10-29 18:07 UTC. This is the report-cap
 
 **Result:** Assurance returned 61 rows but reported `totalCount=30`; 36 rows matched 18 unique switches. Each matched switch appeared twice. The response did not include a source timestamp. The table shows the raw `overallHealth` value without assigning meaning to it.
 
+**Unresolved data quality:** raw response/page traces are not bundled, so the
+cause of the count mismatch and repeated IDs cannot be attributed to the controller,
+MCP decoding, pagination, or report assembly. Unique-device counts are grouping
+results, not proof that repeated records are identical or can be discarded. A
+follow-up capture should preserve page boundaries, response metadata, device IDs,
+and differing fields before choosing a deduplication rule.
+
 | Returned overallHealth | Switches | Unique count |
 |---:|---|---:|
 | -3 | switch-c9200l-02, switch-c9600-01, switch-c9300-05 | 3 |
@@ -240,6 +280,13 @@ Share-ready example report captured 2026-10-29 18:07 UTC. This is the report-cap
 
 **Inputs:** `api_getComplianceDetail(complianceStatus=NON_COMPLIANT, limit=500, offset=1)`; join against the 18 switches; detail lookup for each matched switch.
 **Result:** 26 NON_COMPLIANT records returned overall, 20 matched switch records representing 13 unique switches. All 13 category-detail lookups succeeded.
+
+**Grouping limitation:** the report groups matched records by resolved device UUID
+for one category-detail lookup per switch. It does not preserve the 20 source rows,
+so their grain (for example, category-level versus repeated device-level records)
+cannot be established here. Do not label the additional rows duplicates or count
+20 distinct switches. Preserve device UUID, compliance type/status, and assessment
+time in a future capture to explain the relationship.
 
 | Switch | Category rows | Returned category statuses | Detail lookup |
 |---|---:|---|---|
@@ -333,7 +380,9 @@ Share-ready example report captured 2026-10-29 18:07 UTC. This is the report-cap
 
 **Captured:** 2026-10-29 18:07 UTC
 **Inputs:** no arguments.
-**Result:** 28 allowed keyword entries returned. The command execution tool was not called.
+**Result:** 28 allowed keyword entries returned. The inspected 2.3.7.11 bundle
+exposes no command-runner execution tool; this result demonstrates catalog
+retrieval only, not CLI execution.
 
 `call-home`, `cd`, `cping`, `crypto`, `dir`, `eping`, `grep`, `help`, `mediatrace`, `monitor`, `more`, `mping`, `mstat`, `ping`, `pwd`, `sdlc`, `show`, `sh`, `standby`, `start-chat`, `systat`, `tarp`, `test`, `traceroute`, `ucse`, `verify`, `where`, `which-route`
 
@@ -354,6 +403,11 @@ Share-ready example report captured 2026-10-29 18:07 UTC. This is the report-cap
 **Captured:** 2026-10-29 18:07 UTC
 **Inputs:** `switch-c9300-04`; device detail, interfaces, VLANs, sanitized config, compliance status and details.
 **Result:** snapshot evidence assembled: model `C9300-24UX`, software `26.01.1`, 52 interfaces, 6 VLAN/SVI records, config 1958 lines with secret lines redacted, compliance `NON_COMPLIANT`; latest returned source timestamps include EoX 2026-10-24T05:16:00.278Z and compliance 2026-10-29T14:28:42.506Z. No planned change was run.
+
+**Persistence limitation:** this section is a narrative summary, not a saved
+structured pre-change snapshot. No separate snapshot artifact or path is recorded,
+so persistence and suitability for an automated before/after comparison are
+unverified. Do not imply that a reusable snapshot file was created.
 
 ## 15B. Build a fleet lifecycle and exposure report
 
