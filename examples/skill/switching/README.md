@@ -15,7 +15,8 @@ catalyst-center-switching/
 ├── SKILL.md                         # The skill (loaded on demand)
 ├── README.md                        # This file
 └── references/
-    ├── example-prompts.md           # Grouped, annotated prompts per capability
+    ├── example-prompts.md           # 26 copy-ready switching workflows, exercised live
+    ├── example-prompt-results.md    # Captured inputs and outputs for all 26 examples
     ├── playbook.md                  # Prompts → tools, client configs, gotchas
     ├── capability-matrix.md         # Validated CAN/CANNOT + PM enhancement asks
     └── get-tools-evidence.md        # Live input/output examples (sanitized)
@@ -35,8 +36,9 @@ catalyst-center-switching/
 
 Start with the [switching prompt library](./references/example-prompts.md).
 It includes 26 copyable workflows across 15 capability groups, with tool sequences,
-required inputs, expected report formats, and limitations. The examples are
-schema-checked guidance, not a claim that every workflow was executed end-to-end.
+required inputs, expected report formats, and limitations. All 26 prompts were exercised
+against a live 2.3.7.11 controller; captured results and coverage notes are in the
+[example prompt results](./references/example-prompt-results.md).
 
 ## Install
 Copy this whole folder into one of your agent's skill locations:
@@ -52,6 +54,13 @@ cp -R catalyst-center-switching <target>/.github/skills/
 
 It then appears as `/catalyst-center-switching` and auto-loads for switching tasks.
 
+## Captured prompt runs
+
+The [example prompt results](./references/example-prompt-results.md) document the
+resolved inputs and captured outcomes for all 26 prompts. Hostnames are replaced
+consistently with model-family aliases such as `switch-c9300-01`; the dated report
+notes which environment details remain in the capture.
+
 ## Important notes
 - **Read-centric.** On Catalyst Center `2.3.7.11` the bundle exposes **514 read
   tools + exactly 1 write tool** (compliance remediation). There are no tools to
@@ -62,8 +71,9 @@ It then appears as `/catalyst-center-switching` and auto-loads for switching tas
   flap; gate it behind change control. Prefer a read-only account otherwise.
 - **Provenance.** The [evidence appendix](./references/get-tools-evidence.md) accounts
   for 514 GET definitions: 437 were invoked and 77 were skipped. Invocation does
-  not imply success; credential/discovery outputs are redacted. This harvest does
-  not validate every complete prompt workflow.
+  not imply success; credential/discovery outputs are redacted. Separately, the dated
+  `references/example-prompt-results.md` records all 26 switching prompt runs; hostnames
+  are replaced consistently, while IPs and opaque IDs remain from the test environment.
 
 ## License / attribution
 The MCP server referenced by this skill is Apache-2.0

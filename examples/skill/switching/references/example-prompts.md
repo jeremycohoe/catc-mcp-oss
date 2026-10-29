@@ -14,9 +14,10 @@ should obtain it. You do not need to look up UUIDs or parse JSON yourself.
    explicitly marked remediation workflow.
 
 **Evidence status:** tool names, required arguments, and the mappings below were
-checked against the local 2.3.7.11 bundle. Earlier testing exercised individual tools;
-these complete natural-language workflows have **not** all been executed end-to-end.
-Expected results describe a report format, not a guarantee that every field exists.
+checked against the local 2.3.7.11 bundle. All 26 workflows were exercised against a
+live 2.3.7.11 controller on 2026-10-29; results depend on the controller's data and
+feature availability. Expected results describe a report format, not a guarantee that
+every field exists.
 
 ### Rules that apply to every example
 
@@ -32,6 +33,8 @@ Expected results describe a report format, not a guarantee that every field exis
   calling the result "all."
 - Label unavailable fields "not returned." An empty response means no records were
   returned for that query, not proof of no risk or that a feature is unconfigured.
+- Use the exact `family` string returned by inventory. In the test controller,
+  `family="Switches and Hubs"` returned 18 switches; `family="Switch"` returned none.
 - Include collection/scan timestamps when returned. Do not equate retrieval time
   with live device state. Keep observations separate from hypotheses.
 - Never display credentials or secret-bearing configuration in reports. Treat
@@ -77,8 +80,9 @@ Include the total examined, retrieval failures, and collection timestamps.
 Do not make changes.
 ```
 
-**Tools / sequence:** `api_retrieveNetworkDevices` with the discovered switch
-`family`, `limit`, and `offset`; `api_getDeviceByID(id=<device UUID>)` for details.
+**Tools / sequence:** `api_retrieveNetworkDevices` with the exact switch `family` value
+returned by inventory, `limit`, and `offset`; `api_getDeviceByID(id=<device UUID>)` for
+fields missing from the list. Do not assume `family` accepts a substring.
 
 **Expected output:** switch inventory table plus a coverage summary. Missing uptime
 must not be invented.
@@ -114,7 +118,9 @@ This is read-only.
 `api_getEoXDetailsPerDevice(deviceId=<device UUID>)` for each switch.
 
 **Expected output:** expired, upcoming, and unknown-data groups. Preserve the
-milestone types actually returned rather than assuming a fixed EoX schema.
+milestone types and `scanStatus` actually returned rather than assuming a fixed EoX
+schema. A non-success scan status can coexist with returned EoX details; report both
+and do not present those details as a confirmed current scan.
 
 ## 2. Interfaces and ports
 
@@ -216,25 +222,29 @@ promise a full archive count when the history is capped.
 ### 5A. Rank switches by reported health
 
 ```text
-Show managed switches ordered by their most recently available health score,
-lowest first. Join the health results to switch inventory so APs and routers
-are excluded. Include hostname, IP, score, returned health indicators, and
-observation time. List switches with no matching health record separately.
-Do not treat missing data as a zero score. This is read-only.
+Show managed switches ordered by the returned `overallHealth` value where present.
+Join the health results to switch inventory so APs and routers are excluded. Preserve
+the exact field name and value; do not call it a score or assign meaning to negative
+values unless the live tool documentation defines them. Include returned health
+indicators and source time where available. Report duplicate rows and count mismatches
+instead of silently deduplicating. List switches with no matching health record
+separately; missing data is not zero. This is read-only.
 ```
 
 **Tools / sequence:** switch inventory plus paginated `api_devices` results.
 Match actual identifiers returned by each response rather than assuming identical
 field names across legacy inventory and Assurance.
 
-**Expected output:** health ranking and a no-health-data table.
+**Expected output:** ranking of reported values, a no-health-data table, and any
+pagination, timestamp, duplicate, or count-reconciliation limitations.
 
 ### 5B. Triage one switch without inventing a root cause
 
 ```text
-Investigate the latest reported health of <switch>. Combine device details,
-available health indicators, complete interface status, and a sanitized review
-of relevant collected configuration. Separate facts from possible explanations.
+Investigate the reported health of <switch>. Combine device details, available
+health indicators, complete interface status, and a sanitized review of relevant
+collected configuration. Include source timestamps where returned; if no timestamp
+is present, say so and do not imply the result is fresh. Separate facts from possible explanations.
 Give the top next checks, and state what data is missing.
 Do not claim interface status proves packet errors, or that correlation proves
 root cause. Do not run CLI commands or make changes.
@@ -304,7 +314,7 @@ retrieve its category breakdown. Report unmatched IDs and failed lookups.
 Do not remediate anything or claim the assessment is live.
 ```
 
-**Tools / sequence:** `api_getComplianceStatus(complianceStatus="NON_COMPLIANT",
+**Tools / sequence:** `api_getComplianceDetail(complianceStatus="NON_COMPLIANT",
 limit=<schema-supported page size>, offset=...)`; join switch inventory;
 `api_complianceDetailsOfDevice(deviceUuid)` for category detail.
 
@@ -442,9 +452,11 @@ Read-only.
 ```
 
 **Tools / sequence:** device lookup;
-`api_getSecurityAdvisoriesAffectingTheNetworkDevice(networkDeviceId)`,
-`api_getFieldNoticesAffectingTheNetworkDevice(networkDeviceId)`, and
-`api_getBugsAffectingTheNetworkDevice(networkDeviceId)`.
+`api_getSecurityAdvisoriesAffectingTheNetworkDevice(networkDeviceId, limit=10,
+sortBy="securityImpactRating", order="desc", offset=1)`; follow its pagination if
+more results are available. Call `api_getFieldNoticesAffectingTheNetworkDevice`
+and `api_getBugsAffectingTheNetworkDevice` with `networkDeviceId`, `limit`, and
+`offset`, following their documented pagination.
 
 **Expected output:** three findings tables and data-quality notes. These
 controller findings are not a fresh vulnerability assessment.
@@ -532,8 +544,11 @@ Do not upgrade, remediate, or change configuration.
 
 **Tools / sequence:** switch inventory and device detail;
 `api_getEoXDetailsPerDevice`,
-`api_getSecurityAdvisoriesAffectingTheNetworkDevice`, and
-`api_getFieldNoticesAffectingTheNetworkDevice` per device.
+`api_getSecurityAdvisoriesAffectingTheNetworkDevice(networkDeviceId, limit=10,
+sortBy="securityImpactRating", order="desc", offset=1)`, and
+`api_getFieldNoticesAffectingTheNetworkDevice(networkDeviceId, limit, offset)` per
+device, following each tool's pagination. Preserve EoX `scanStatus` alongside any
+returned detail; a non-success scan is unknown data, even if details are present.
 
 **Expected output:** evidence-backed lifecycle/exposure report. Installed versions
 come from inventory, not the software-image repository.
